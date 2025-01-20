@@ -18,3 +18,5 @@ export const userApi = createApi({
     }),
   }),
 });
+
+export const {useGetAllPostsQuery} = userApi
