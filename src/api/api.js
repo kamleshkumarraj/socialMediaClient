@@ -5,7 +5,8 @@ export const loginUser = async ({data , method , url , contentType}) => {
         method ,
         url ,
         data ,
-        'Content-Type' : contentType || 'application/json'
+        'Content-Type' : contentType || 'application/json',
+        withCredentials : true
     }
     try {
         const {data} = await axios(options);

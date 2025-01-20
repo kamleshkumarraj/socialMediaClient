@@ -8,7 +8,7 @@ import { getSelf } from '@/redux/slice/auth.slice';
 const RightSidebar = () => {
   const  user  = useSelector(getSelf);
   return (
-    <div className='pr-32 my-10 w-fit'>
+    <div className='pr-40 my-10 w-fit'>
       <div className='flex items-center gap-2'>
         <Link to={`/profile/${user?._id}`}>
           <Avatar>

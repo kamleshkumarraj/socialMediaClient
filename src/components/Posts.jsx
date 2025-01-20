@@ -10,7 +10,7 @@ const Posts = () => {
 
   useEffect(() => {postRefetch()}, [user])
   return (
-    <div>
+    <div >
         {
           !isPostLoading && !isPostError && posts?.allPosts?.length > 0 && posts?.allPosts?.map((post) => <Post key={post._id} post={post}/>)
         }

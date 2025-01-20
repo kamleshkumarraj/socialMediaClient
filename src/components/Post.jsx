@@ -29,7 +29,7 @@ const Post = ({post}) => {
     }
    
     return (
-        <div className='w-full max-w-sm mx-auto my-8'>
+        <div className='w-[34rem]  mx-auto my-8'>
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
                     <Avatar>
@@ -58,7 +58,7 @@ const Post = ({post}) => {
                 </Dialog>
             </div>
             <img
-                className='object-cover w-full my-2 rounded-sm aspect-square'
+                className='object-cover min-w-[34rem] my-2 rounded-sm aspect-square'
                 src={post.images.url}
                 alt="post_img"
             />
