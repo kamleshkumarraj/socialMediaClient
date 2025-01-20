@@ -10,13 +10,20 @@ export const userApi = createApi({
   endpoints: (builder) => ({
     getAllPosts: builder.query({
       query: () => ({
-        url: "/post/get-all",
+        url: "/post/get/all",
         method: "GET",
         credentials: "include",
       }),
       providesTags: ["getAllPost"],
     }),
+    getSuggestedUsers : builder.query ({
+      query : () => ({
+        url : "/self/suggested-user",
+        method : "get",
+        credentials : "include"
+      })
+    })
   }),
 });
 
-export const {useGetAllPostsQuery} = userApi
+export const {useGetAllPostsQuery , useGetSuggestedUsersQuery} = userApi

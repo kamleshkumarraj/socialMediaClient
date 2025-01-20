@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { useGetSuggestedUsersQuery } from '@/redux/slice/userApi.slice';
 
 const SuggestedUsers = () => {
-    const suggestedUsers  = []
+   const {data : suggestedUsers , isLoading : suggestedUsersLoading , error : suggestedUsersError , isError : suggestedUsersIsError} = useGetSuggestedUsersQuery()
+
+   if(suggestedUsersLoading){
+    return <h1>Suggested User Loading .....</h1>
+   }
+    
     return (
         <div className='my-10'>
             <div className='flex items-center justify-between text-sm'>
@@ -10,13 +16,13 @@ const SuggestedUsers = () => {
                 <span className='font-medium cursor-pointer'>See All</span>
             </div>
             {
-                suggestedUsers.map((user) => {
+               !suggestedUsersLoading && !suggestedUsersIsError && suggestedUsers.map((user) => {
                     return (
                         <div key={user._id} className='flex items-center justify-between my-5'>
                             <div className='flex items-center gap-2'>
                                 <Link to={`/profile/${user?._id}`}>
                                     <Avatar>
-                                        <AvatarImage src={user?.profilePicture} alt="post_image" />
+                                        <AvatarImage src={user?.avatar?.url} alt="post_image" />
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                 </Link>
