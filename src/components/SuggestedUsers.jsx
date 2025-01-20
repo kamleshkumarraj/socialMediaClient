@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useGetSuggestedUsersQuery } from '@/redux/slice/userApi.slice';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 const SuggestedUsers = () => {
-   const {data : suggestedUsers , isLoading : suggestedUsersLoading , error : suggestedUsersError , isError : suggestedUsersIsError} = useGetSuggestedUsersQuery()
-
+   const {data : suggestedUsers , isLoading : suggestedUsersLoading , error : suggestedUsersError , isError : suggestedUsersIsError , refetch : refetchSuggestUser} = useGetSuggestedUsersQuery()
+    const users = useSelector(getSelection)
+   useEffect(() => {
+    refetchSuggestUser();
+   },[users])
+   console.log(suggestedUsers)
    if(suggestedUsersLoading){
     return <h1>Suggested User Loading .....</h1>
    }
@@ -16,7 +22,7 @@ const SuggestedUsers = () => {
                 <span className='font-medium cursor-pointer'>See All</span>
             </div>
             {
-               !suggestedUsersLoading && !suggestedUsersIsError && suggestedUsers.map((user) => {
+               !suggestedUsersLoading && !suggestedUsersIsError && suggestedUsers?.length > 0 && suggestedUsers.map((user) => {
                     return (
                         <div key={user._id} className='flex items-center justify-between my-5'>
                             <div className='flex items-center gap-2'>

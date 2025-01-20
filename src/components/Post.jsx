@@ -33,12 +33,12 @@ const Post = ({post}) => {
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
                     <Avatar>
-                        <AvatarImage src={post?.author?.profilePicture} alt="post_image" />
+                        <AvatarImage src={post?.creatorDetails?.avatar?.url} alt="post_image" />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                     <div className='flex items-center gap-3'>
-                        <h1>{post?.author?.username}</h1>
-                       {user?._id === post?.author?._id &&  <Badge variant="secondary">Author</Badge>}
+                        <h1>{post?.creatorDetails?.creatorName}</h1>
+                       {user?._id === post?.creatorDetails?._id &&  <Badge variant="secondary">Author</Badge>}
                     </div>
                 </div>
                 <Dialog>
@@ -47,19 +47,19 @@ const Post = ({post}) => {
                     </DialogTrigger>
                     <DialogContent className="flex flex-col items-center text-sm text-center">
                         {
-                        post?.author?._id !== user?._id && <Button variant='ghost' className="cursor-pointer w-fit text-[#ED4956] font-bold">Unfollow</Button>
+                        post?.creatorDetails?._id !== user?._id && <Button variant='ghost' className="cursor-pointer w-fit text-[#ED4956] font-bold">Unfollow</Button>
                         }
                         
                         <Button variant='ghost' className="cursor-pointer w-fit">Add to favorites</Button>
                         {
-                            user && user?._id === post?.author._id && <Button variant='ghost' className="cursor-pointer w-fit">Delete</Button>
+                            user && user?._id === post?.creatorDetails?._id && <Button variant='ghost' className="cursor-pointer w-fit">Delete</Button>
                         }
                     </DialogContent>
                 </Dialog>
             </div>
             <img
                 className='object-cover w-full my-2 rounded-sm aspect-square'
-                src={post.image}
+                src={post.images.url}
                 alt="post_img"
             />
 
@@ -78,8 +78,8 @@ const Post = ({post}) => {
             </div>
             <span className='block mb-2 font-medium'>{postLike} likes</span>
             <p>
-                <span className='mr-2 font-medium'>{post?.author?.username}</span>
-                {post?.caption}
+                <span className='mr-2 font-medium'>{post?.creatorDetails?.username}</span>
+                {post?.content}
             </p>
             {
                 comment && comment?.length > 0 && (

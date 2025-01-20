@@ -1,30 +1,18 @@
+import { useGetAllPostsQuery } from '@/redux/slice/userApi.slice';
 import Post from './Post';
+import { useSelector } from 'react-redux';
+import { getSelf } from '@/redux/slice/auth.slice';
+import { useEffect } from 'react';
 
 const Posts = () => {
-  const posts = [ 
-    {
-    _id : 1,
-    author : {
-        username : "Kamlesh Kumar",
-        profilePicture : "https://via.placeholder.com/150",
-        _id : 2
-    },
-    image : "https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg"
-}, 
-{
-  _id : 1,
-  author : {
-      username : "Kamlesh Kumar",
-      profilePicture : "https://via.placeholder.com/150",
-      _id : 2
-  },
-  image : "https://pixlr.com/images/generator/how-to-generate.webp"
-}, 
-];
+  const {data : posts = [] , isLoading : isPostLoading , isError : isPostError , refetch : postRefetch} = useGetAllPostsQuery();
+  const user = useSelector(getSelf);
+
+  useEffect(() => {postRefetch()}, [user])
   return (
     <div>
         {
-            posts.map((post) => <Post key={post._id} post={post}/>)
+          !isPostLoading && !isPostError && posts?.allPosts?.length > 0 && posts?.allPosts?.map((post) => <Post key={post._id} post={post}/>)
         }
     </div>
   )

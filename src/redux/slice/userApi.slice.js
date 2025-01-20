@@ -14,6 +14,9 @@ export const userApi = createApi({
         method: "GET",
         credentials: "include",
       }),
+      transformResponse : (res) => {
+        return res.data
+      },
       providesTags: ["getAllPost"],
     }),
     getSuggestedUsers : builder.query ({
@@ -21,7 +24,10 @@ export const userApi = createApi({
         url : "/self/suggested-user",
         method : "get",
         credentials : "include"
-      })
+      }),
+      transformResponse : (res) => {
+        return res?.data
+      }
     })
   }),
 });
