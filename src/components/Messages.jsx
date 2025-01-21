@@ -1,21 +1,20 @@
-import React from 'react'
+import { getSelf } from '@/redux/slice/auth.slice'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import useGetAllMessage from '@/hooks/useGetAllMessage'
-import useGetRTM from '@/hooks/useGetRTM'
 
 const Messages = ({ selectedUser }) => {
-    useGetRTM();
-    useGetAllMessage();
-    const {messages} = useSelector(store=>store.chat);
-    const {user} = useSelector(store=>store.auth);
+    // useGetRTM();
+    // useGetAllMessage();
+    // const {messages} = useSelector(store=>store.chat);
+    const user = useSelector(getSelf);
+    const messages =[ ];
     return (    
-        <div className='overflow-y-auto flex-1 p-4'>
+        <div className='flex-1 p-4 overflow-y-auto'>
             <div className='flex justify-center'>
                 <div className='flex flex-col items-center justify-center'>
-                    <Avatar className="h-20 w-20">
+                    <Avatar className="w-20 h-20">
                         <AvatarImage src={selectedUser?.profilePicture} alt='profile' />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
