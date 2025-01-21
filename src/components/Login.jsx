@@ -22,6 +22,19 @@ const Login = () => {
         setInput({ ...input, [e.target.name]: e.target.value });
     }
 
+    useEffect(() => {
+        (async () => {
+          const {message , success , data} = await loginUser({method : "POST" , url : "http://localhost:4000/api/v1/auth/direct-login", contentType : "application/json"});
+    
+          if(success){
+            dispatch(setUsers(data));
+            navigate("/");
+          }else{
+            console.log("We get error during direct login the user !",message)
+          }
+        })()
+      },[])
+
     const loginHandler = async (e) => {
         e.preventDefault();
         setLoading(true);
