@@ -8,13 +8,16 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
+import PropTypes from 'prop-types'
+import { getSelf } from '@/redux/slice/auth.slice'
 
 const Post = ({post}) => {
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
-    const { user } = useSelector(store => store.auth);
-   
-    const [liked, setLiked] = useState(post?.likes?.includes(user?._id) || false);
+    // const { user } = useSelector(store => store.auth);
+    const user= useSelector(getSelf)
+    // const isLiked = isLiked(user.id , post.reactions)
+    const [liked, setLiked] = useState(post?.reactions?.includes(user?._id) || false);
     const [postLike, setPostLike] = useState(post?.likes?.length);
     const [comment, setComment] = useState(post?.comments);
     const dispatch = useDispatch();
@@ -76,7 +79,7 @@ const Post = ({post}) => {
                 </div>
                 <Bookmark className='cursor-pointer hover:text-gray-600' />
             </div>
-            <span className='block mb-2 font-medium'>{postLike} likes</span>
+            <span className='block mb-2 font-medium'>{post?.likesCount} likes</span>
             <p>
                 <span className='mr-2 font-medium'>{post?.creatorDetails?.username}</span>
                 {post?.content}
@@ -104,6 +107,10 @@ const Post = ({post}) => {
             </div>
         </div>
     )
+}
+
+Post.propTypes = {
+    post: PropTypes.object.isRequired
 }
 
 export default Post

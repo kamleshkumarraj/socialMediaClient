@@ -39,7 +39,8 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         const toastId = toast.loading("Please wait...");
-        const {data , message , success} = await loginUser({data : input , method : "POST" , url : "http://localhost:4000/api/v1/auth/login", contentType : "application/json"});
+        try {
+            const {data , message , success} = await loginUser({data : input , method : "POST" , url : "http://localhost:4000/api/v1/auth/login", contentType : "application/json"});
         console.log(success)
         if(success){
             dispatch(setUsers(data));
@@ -47,6 +48,9 @@ const Login = () => {
             navigate("/");
         }else{
             updateToast({toastId , message : message || "Something went wrong" , type : "error"});
+        }
+        } catch (error) {
+            updateToast({toastId , message : error || "Something went wrong" , type : "error"});
         }
         setLoading(false);
     }
