@@ -30,6 +30,16 @@ export const userApi = createApi({
       },
       providesTags: ["getAllSuggestedUsers"],
     }),
+
+    getUserBio : builder.query({
+      query : (userId) => ({
+        url :  `/self/get-bio/${userId}`,
+        method : "GET",
+        credentials : "include"
+      }),
+      transformResponse : (res) => res.data
+    }),
+
     createPost: builder.mutation({
       query: (data) => ({
         url: "/post/create",
@@ -80,7 +90,9 @@ export const userApi = createApi({
         method : "POST",
         credentials : "include"
       })
-    })
+    }),
+
+
     
   }),
 });
@@ -92,6 +104,7 @@ export const {
   useLazyGetCommentForPostQuery,
   useCreateCommentMutation,
   useCreateReactionMutation,
-  useCreateLikeForPostMutation
+  useCreateLikeForPostMutation,
+  useGetUserBioQuery
   
 } = userApi;

@@ -7,12 +7,14 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { AtSign, Heart, MessageCircle } from 'lucide-react';
 import { getSelf } from '@/redux/slice/auth.slice';
+import { useGetUserBioQuery } from '@/redux/slice/userApi.slice';
 
 const Profile = () => {
   const params = useParams();
   const userId = params.id;
   const [activeTab, setActiveTab] = useState('posts');
   const user = useSelector(getSelf);
+  const {data : userProfile , isLoading : isProfileLoading , isError : isProfileError} = useGetUserBioQuery(userId)
   
   const isLoggedInUserProfile = user?._id === userProfile?._id;
   const isFollowing = false;
@@ -22,6 +24,10 @@ const Profile = () => {
   }
 
   const displayedPost = activeTab === 'posts' ? userProfile?.posts : userProfile?.bookmarks;
+
+  if(isProfileLoading) return <h2>Loading the profile data.</h2>
+
+  if(isProfileError) return <p>WE get error during fetching user bio details.</p>
 
   return (
     <div className='flex justify-center max-w-5xl pl-10 mx-auto'>
