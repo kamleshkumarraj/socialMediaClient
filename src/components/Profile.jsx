@@ -6,15 +6,14 @@ import { useSelector } from 'react-redux';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { AtSign, Heart, MessageCircle } from 'lucide-react';
+import { getSelf } from '@/redux/slice/auth.slice';
 
 const Profile = () => {
   const params = useParams();
   const userId = params.id;
-  useGetUserProfile(userId);
   const [activeTab, setActiveTab] = useState('posts');
-
-  const { userProfile, user } = useSelector(store => store.auth);
-
+  const user = useSelector(getSelf);
+  
   const isLoggedInUserProfile = user?._id === userProfile?._id;
   const isFollowing = false;
 
@@ -25,11 +24,11 @@ const Profile = () => {
   const displayedPost = activeTab === 'posts' ? userProfile?.posts : userProfile?.bookmarks;
 
   return (
-    <div className='flex max-w-5xl justify-center mx-auto pl-10'>
+    <div className='flex justify-center max-w-5xl pl-10 mx-auto'>
       <div className='flex flex-col gap-20 p-8'>
         <div className='grid grid-cols-2'>
           <section className='flex items-center justify-center'>
-            <Avatar className='h-32 w-32'>
+            <Avatar className='w-32 h-32'>
               <AvatarImage src={userProfile?.profilePicture} alt="profilephoto" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
@@ -41,9 +40,9 @@ const Profile = () => {
                 {
                   isLoggedInUserProfile ? (
                     <>
-                      <Link to="/account/edit"><Button variant='secondary' className='hover:bg-gray-200 h-8'>Edit profile</Button></Link>
-                      <Button variant='secondary' className='hover:bg-gray-200 h-8'>View archive</Button>
-                      <Button variant='secondary' className='hover:bg-gray-200 h-8'>Ad tools</Button>
+                      <Link to="/account/edit"><Button variant='secondary' className='h-8 hover:bg-gray-200'>Edit profile</Button></Link>
+                      <Button variant='secondary' className='h-8 hover:bg-gray-200'>View archive</Button>
+                      <Button variant='secondary' className='h-8 hover:bg-gray-200'>Ad tools</Button>
                     </>
                   ) : (
                     isFollowing ? (
@@ -87,10 +86,10 @@ const Profile = () => {
             {
               displayedPost?.map((post) => {
                 return (
-                  <div key={post?._id} className='relative group cursor-pointer'>
-                    <img src={post.image} alt='postimage' className='rounded-sm my-2 w-full aspect-square object-cover' />
-                    <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                      <div className='flex items-center text-white space-x-4'>
+                  <div key={post?._id} className='relative cursor-pointer group'>
+                    <img src={post.image} alt='postimage' className='object-cover w-full my-2 rounded-sm aspect-square' />
+                    <div className='absolute inset-0 flex items-center justify-center transition-opacity duration-300 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100'>
+                      <div className='flex items-center space-x-4 text-white'>
                         <button className='flex items-center gap-2 hover:text-gray-300'>
                           <Heart />
                           <span>{post?.likes.length}</span>

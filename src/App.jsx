@@ -1,12 +1,12 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ChatPage from './components/ChatPage'
-import EditProfile from './components/EditProfile'
 import Home from './components/Home'
 import Login from './components/Login'
 import MainLayout from './components/MainLayout'
-import Profile from './components/Profile'
-import Signup from './components/Signup'
 import ProtectedRoutes from './components/ProtectedRoutes'
+import Signup from './components/Signup'
+import Profile from './components/Profile'
+import EditProfile from './components/EditProfile'
 
 
 const browserRouter = createBrowserRouter([
@@ -18,14 +18,14 @@ const browserRouter = createBrowserRouter([
         path: '/',
         element: <Home />
       },
-     /* {
+      {
         path: '/profile/:id',
         element: <Profile />
       },
       {
         path: '/account/edit',
         element: <EditProfile />
-      }, */
+      }, 
       {
         path: '/chat',
         element: <ChatPage />

@@ -72,7 +72,16 @@ export const userApi = createApi({
         body : {commentMessage}
       }),
       invalidatesTags: ["getAllCommentsForPost"],
+    }),
+
+    createLikeForPost : builder.mutation({
+      query : ({postId}) => ({
+        url : `/reaction/create-reaction/${postId}`,
+        method : "POST",
+        credentials : "include"
+      })
     })
+    
   }),
 });
 
@@ -83,5 +92,6 @@ export const {
   useLazyGetCommentForPostQuery,
   useCreateCommentMutation,
   useCreateReactionMutation,
+  useCreateLikeForPostMutation
   
 } = userApi;

@@ -12,6 +12,10 @@ import PropTypes from 'prop-types'
 import { getSelf } from '@/redux/slice/auth.slice'
 import CommentDialog from './CommentDialog'
 import { setCommentOpen, setSelectedPostForReaction } from '@/redux/slice/misc.slice'
+import { useCreateLikeForPostMutation } from '@/redux/slice/userApi.slice'
+import { toast } from 'react-toastify'
+import { updateToast } from '@/utils/updateToast.utils'
+import { updateCreateLike } from '@/utils/update.store'
 
 const Post = ({post}) => {
     const [text, setText] = useState("");
@@ -28,6 +32,22 @@ const Post = ({post}) => {
             setText(inputText);
         } else {
             setText("");
+        }
+    }
+    const [createLike] = useCreateLikeForPostMutation();
+    const likeAPost = async ({type , postId}) => {
+        const toastId = toast.loading("like creating...");
+        
+        try {
+            const response = await createLike({postId});
+            if(response?.data?.success){
+                updateToast({toastId , message : response?.data?.message || "Like created successfully" , type : "success"})
+                updateCreateLike({dispatch , data : {postId , creator : user._id} , type})
+            }else{
+                updateToast({toastId , message : response?.data?.message || "successfully liked the post.", type : "success"})
+            }
+        } catch (error) {
+            updateToast({toastId , message : error?.data?.message || "Something went wrong" , type : "error"})
         }
     }
    
@@ -69,7 +89,13 @@ const Post = ({post}) => {
             <div className='flex items-center justify-between my-2'>
                 <div className='flex items-center gap-3'>
                     {
-                        liked ? <FaHeart  size={'24'} className='text-red-600 cursor-pointer' /> : <FaRegHeart  size={'22px'} className='cursor-pointer hover:text-gray-600' />
+                        liked ? <FaHeart onClick={() => {
+                            likeAPost({postId : post._id , type : "unlike"});
+                            setLiked(false);
+                        }}  size={'24'} className='text-red-600 cursor-pointer' /> : <FaRegHeart onClick={() => {
+                            likeAPost({postId : post._id , type : "like"});
+                            setLiked(true);
+                        }}  size={'22px'} className='cursor-pointer hover:text-gray-600' />
                     }
 
                     <MessageCircle onClick={() => {
