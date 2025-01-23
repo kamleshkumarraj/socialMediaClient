@@ -30,6 +30,7 @@ const browserRouter = createBrowserRouter([
         path: '/chat',
         element: <ChatPage />
       }, 
+      
     ]
   },
   {

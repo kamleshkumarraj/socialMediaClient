@@ -10,6 +10,8 @@ import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import PropTypes from 'prop-types'
 import { getSelf } from '@/redux/slice/auth.slice'
+import CommentDialog from './CommentDialog'
+import { setCommentOpen, setSelectedPostForReaction } from '@/redux/slice/misc.slice'
 
 const Post = ({post}) => {
     const [text, setText] = useState("");
@@ -18,8 +20,6 @@ const Post = ({post}) => {
     const user= useSelector(getSelf)
     // const isLiked = isLiked(user.id , post.reactions)
     const [liked, setLiked] = useState(post?.reactions?.includes(user?._id) || false);
-    const [postLike, setPostLike] = useState(post?.likes?.length);
-    const [comment, setComment] = useState(post?.comments);
     const dispatch = useDispatch();
 
     const changeEventHandler = (e) => {
@@ -73,7 +73,8 @@ const Post = ({post}) => {
                     }
 
                     <MessageCircle onClick={() => {
-                        setOpen(true);
+                        dispatch(setCommentOpen(true));
+                        dispatch(setSelectedPostForReaction(post))
                     }} className='cursor-pointer hover:text-gray-600' />
                     <Send className='cursor-pointer hover:text-gray-600' />
                 </div>
@@ -85,13 +86,13 @@ const Post = ({post}) => {
                 {post?.content}
             </p>
             {
-                comment && comment?.length > 0 && (
+                post?.commentsCount > 0 && (
                     <span onClick={() => {
                         setOpen(true);
-                    }} className='text-sm text-gray-400 cursor-pointer'>View all {comment?.length} comments</span>
+                    }} className='text-sm text-gray-400 cursor-pointer'>View all {post?.commentsCount} comments</span>
                 )
             }
-            { /* <CommentDialog open={open} setOpen={setOpen} /> */}
+            
             <div className='flex items-center justify-between'>
                 <input
                     type="text"

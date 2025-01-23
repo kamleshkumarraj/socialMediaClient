@@ -1,85 +1,81 @@
-import React, { useEffect, useState } from 'react'
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Link } from 'react-router-dom'
+import { getMiscData, setCommentOpen, setSelectedPostForReaction } from '@/redux/slice/misc.slice'
+import { useCreateCommentMutation, useLazyGetCommentForPostQuery } from '@/redux/slice/userApi.slice'
+import { updateToast } from '@/utils/updateToast.utils'
 import { MoreHorizontal } from 'lucide-react'
-import { Button } from './ui/button'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import Comment from './Comment'
-import axios from 'axios'
-import { toast } from 'sonner'
-import { setPosts } from '@/redux/postSlice'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Button } from './ui/button'
+import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 
-const CommentDialog = ({ open, setOpen }) => {
-  const [text, setText] = useState("");
-  const { selectedPost, posts } = useSelector(store => store.post);
-  const [comment, setComment] = useState([]);
-  const dispatch = useDispatch();
+const CommentDialog = () => {
+  const {isCommentOpen , selectedPostForReaction} = useSelector(getMiscData)
+  const [getCommentData , {data : comment }] = useLazyGetCommentForPostQuery(selectedPostForReaction?._id)
 
   useEffect(() => {
-    if (selectedPost) {
-      setComment(selectedPost.comments);
+    if(isCommentOpen && selectedPostForReaction){
+      getCommentData(selectedPostForReaction?._id);
     }
-  }, [selectedPost]);
+  },[isCommentOpen])
 
-  const changeEventHandler = (e) => {
-    const inputText = e.target.value;
-    if (inputText.trim()) {
-      setText(inputText);
-    } else {
-      setText("");
-    }
-  }
-
-  const sendMessageHandler = async () => {
-
-    try {
-      const res = await axios.post(`https://instaclone-g9h5.onrender.com/api/v1/post/${selectedPost?._id}/comment`, { text }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        withCredentials: true
-      });
-
-      if (res.data.success) {
-        const updatedCommentData = [...comment, res.data.comment];
-        setComment(updatedCommentData);
-
-        const updatedPostData = posts.map(p =>
-          p._id === selectedPost._id ? { ...p, comments: updatedCommentData } : p
-        );
-        dispatch(setPosts(updatedPostData));
-        toast.success(res.data.message);
-        setText("");
+  
+  // code for creating comment
+  const [commentMessage , setCommentMessage] = useState("")
+  const [createComment] = useCreateCommentMutation()
+  
+  const createCommentHandler = async (e) => {
+    e.preventDefault();
+      if(!commentMessage) {
+          toast.error("All fields are required");
+          return;
       }
-    } catch (error) {
-      console.log(error);
-    }
+      const data = {
+          postId : selectedPostForReaction?._id,
+          commentMessage
+      }
+      const toastId = toast.loading("comment creating...");
+      try {
+          const response = await createComment(data);
+          if(response?.data?.success){
+              updateToast({toastId , message : response?.data?.message || "Comment created successfully" , type : "success"});
+          }else{
+              updateToast({toastId , message : response?.data?.message || "Something went wrong" , type : "error"});
+          }
+      } catch (error) {
+          updateToast({toastId , message : error?.data?.message || "Something went wrong" , type : "error"});
+      }
   }
-
+  const dispatch = useDispatch();
+  
   return (
-    <Dialog open={open}>
-      <DialogContent onInteractOutside={() => setOpen(false)} className="max-w-5xl p-0 flex flex-col">
+    <Dialog open={isCommentOpen}>
+      <DialogContent onInteractOutside={() => {
+        dispatch(setCommentOpen(false))
+        dispatch(setSelectedPostForReaction(null))
+      }} className="flex flex-col max-w-5xl p-0">
         <div className='flex flex-1'>
-          <div className='w-1/2'>
+          <div className='w-[40rem]'>
             <img
-              src={selectedPost?.image}
+              src={selectedPostForReaction?.images?.url}
               alt="post_img"
-              className='w-full h-full object-cover rounded-l-lg'
+              className='object-cover w-[40rem] h-[40rem] rounded-l-lg'
             />
           </div>
-          <div className='w-1/2 flex flex-col justify-between'>
+          <div className='flex flex-col justify-between w-1/2'>
             <div className='flex items-center justify-between p-4'>
-              <div className='flex gap-3 items-center'>
+              <div className='flex items-center gap-3'>
                 <Link>
                   <Avatar>
-                    <AvatarImage src={selectedPost?.author?.profilePicture} />
+                    <AvatarImage src={selectedPostForReaction?.creatorDetails?.avatar?.url} />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </Link>
                 <div>
-                  <Link className='font-semibold text-xs'>{selectedPost?.author?.username}</Link>
-                  {/* <span className='text-gray-600 text-sm'>Bio here...</span> */}
+                  <Link className='text-xs font-semibold'>{selectedPostForReaction?.creatorDetails?.username}</Link>
+                  {/* <span className='text-sm text-gray-600'>Bio here...</span> */}
                 </div>
               </div>
 
@@ -91,22 +87,24 @@ const CommentDialog = ({ open, setOpen }) => {
                   <div className='cursor-pointer w-full text-[#ED4956] font-bold'>
                     Unfollow
                   </div>
-                  <div className='cursor-pointer w-full'>
+                  <div className='w-full cursor-pointer'>
                     Add to favorites
                   </div>
                 </DialogContent>
               </Dialog>
             </div>
             <hr />
-            <div className='flex-1 overflow-y-auto max-h-96 p-4'>
+            <div className='flex-1 p-4 overflow-y-auto max-h-96'>
               {
-                comment.map((comment) => <Comment key={comment._id} comment={comment} />)
+                comment && comment?.map((comment) => <Comment key={comment._id} comment={comment} />)
               }
             </div>
             <div className='p-4'>
               <div className='flex items-center gap-2'>
-                <input type="text" value={text} onChange={changeEventHandler} placeholder='Add a comment...' className='w-full outline-none border text-sm border-gray-300 p-2 rounded' />
-                <Button disabled={!text.trim()} onClick={sendMessageHandler} variant="outline">Send</Button>
+                <form action="" onSubmit={createCommentHandler} >
+                <input type="text" value={commentMessage} onChange={(e) => setCommentMessage(e.target.value)}  placeholder='Add a comment...' className='w-full p-2 text-sm border border-gray-300 rounded outline-none' />
+                <Button   variant="outline">Send</Button>
+                </form>
               </div>
             </div>
           </div>
